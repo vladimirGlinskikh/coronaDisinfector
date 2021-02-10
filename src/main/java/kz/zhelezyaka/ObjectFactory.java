@@ -2,15 +2,19 @@ package kz.zhelezyaka;
 
 import lombok.SneakyThrows;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ObjectFactory {
     private static ObjectFactory ourInstance = new ObjectFactory();
-    private Config config = new JavaConfig("kz.zhelezyaka");
+    private Config config;
 
     public static ObjectFactory getInstance() {
         return ourInstance;
     }
 
     private ObjectFactory() {
+        config = new JavaConfig("kz.zhelezyaka", new HashMap<>(Map.of(Policeman.class, AngryPolicemen.class)));
     }
 
     @SneakyThrows
