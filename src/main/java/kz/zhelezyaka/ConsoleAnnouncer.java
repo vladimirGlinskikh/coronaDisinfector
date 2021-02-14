@@ -1,10 +1,11 @@
 package kz.zhelezyaka;
 
 public class ConsoleAnnouncer implements Announcer {
-    private Recommendator recomendator = ObjectFactory.getInstance().createObject(Recommendator.class);
+    @InjectByType
+    private Recommendator recommendator;
     @Override
     public void announce(String message) {
         System.out.println(message);
-        recomendator.recommend();
+        recommendator.recommend();
     }
 }
