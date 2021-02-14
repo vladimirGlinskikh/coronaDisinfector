@@ -2,16 +2,13 @@ package kz.zhelezyaka;
 
 import lombok.SneakyThrows;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toMap;
 
 public class ObjectFactory {
+    private List<ObjectConfigurator> configurators = new ArrayList<>();
     private static ObjectFactory ourInstance = new ObjectFactory();
     private Config config;
 
@@ -19,8 +16,12 @@ public class ObjectFactory {
         return ourInstance;
     }
 
+    @SneakyThrows
     private ObjectFactory() {
         config = new JavaConfig("kz.zhelezyaka", new HashMap<>(Map.of(Policeman.class, AngryPolicemen.class)));
+        for (Class<? extends ObjectConfigurator> aClass : config.getScanner().getSubTypesOf(ObjectConfigurator.class)) {
+            configurators.add(aClass.getDeclaredConstructor().newInstance());
+        }
     }
 
     @SneakyThrows
@@ -30,20 +31,7 @@ public class ObjectFactory {
             implClass = config.getImplClass(type);
         }
         T t = implClass.getDeclaredConstructor().newInstance();
-
-        for (Field field : implClass.getDeclaredFields()) {
-            InjectProperty annotation = field.getAnnotation(InjectProperty.class);
-            String path = ClassLoader.getSystemClassLoader().getResource("application.properties").getPath();
-            Stream<String> lines = new BufferedReader(new FileReader(path)).lines();
-            Map<String, String> propertiesMap = lines.map(line -> line.split("=")).collect(toMap(arr -> arr[0], arr -> arr[1]));
-
-            if (annotation != null) {
-               String value = annotation.value().isEmpty() ? propertiesMap.get(field.getName()) : propertiesMap.get(annotation.value());
-                field.setAccessible(true);
-                field.set(t, value);
-            }
-        }
-
+        configurators.forEach(objectConfigurator -> objectConfigurator.configure(t));
         return t;
     }
 }
