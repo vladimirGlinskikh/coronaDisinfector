@@ -33,7 +33,7 @@ public class ObjectFactory {
 
         for (Field field : implClass.getDeclaredFields()) {
             InjectProperty annotation = field.getAnnotation(InjectProperty.class);
-            String path = ClassLoader.getSystemClassLoader().getResource("/home/vg/Документы/IdeaProjects/Corona_desinfector/src/main/resources/application.properties").getPath();
+            String path = ClassLoader.getSystemClassLoader().getResource("application.properties").getPath();
             Stream<String> lines = new BufferedReader(new FileReader(path)).lines();
             Map<String, String> propertiesMap = lines.map(line -> line.split("=")).collect(toMap(arr -> arr[0], arr -> arr[1]));
 
