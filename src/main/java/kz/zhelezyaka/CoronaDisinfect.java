@@ -1,5 +1,6 @@
 package kz.zhelezyaka;
 
+@Deprecated
 public class CoronaDisinfect {
 
     @InjectByType

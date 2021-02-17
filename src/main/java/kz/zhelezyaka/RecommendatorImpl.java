@@ -1,6 +1,7 @@
 package kz.zhelezyaka;
 
 @Singleton
+//@Deprecated
 public class RecommendatorImpl implements Recommendator {
     @InjectProperty("whisky")
     private String alcohol;
